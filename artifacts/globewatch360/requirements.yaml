@@ -1,0 +1,18 @@
+packages:
+  "recharts": "For rendering data-dense dashboard charts (category breakdown, risk distribution)"
+  "date-fns": "For formatting timestamps and dates in incident feeds and reports"
+  "framer-motion": "For polished layout transitions, list item stagger effects, and modal animations"
+  "react-simple-maps": "For rendering the global intelligence heat map"
+  "d3-geo": "Dependency for react-simple-maps to handle map projections"
+  "@hookform/resolvers": "For form validation with react-hook-form and zod"
+  "zod": "For defining form validation schemas"
+
+images:
+  - path: "artifacts/globewatch360/public/images/auth-bg.png"
+    description: "Deep navy and amber abstract digital world map connected by glowing nodes, intelligence dashboard background"
+    aspect_ratio: "16:9"
+
+notes:
+  - "Importing all TanStack Query hooks directly from @workspace/api-client-react as per monorepo standards."
+  - "Assuming the wouter base is configured in App.tsx to handle proxy routing."
+  - "Defaulting entire application to dark mode to fit the 'professional intelligence platform' design requirement."

@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: GlobeWatch360 Global News Intelligence API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: incidents
+    description: News incidents and events
+  - name: threats
+    description: Threat assessments
+  - name: reports
+    description: Report generation
+  - name: scraper
+    description: News scraping operations
+  - name: stats
+    description: Dashboard statistics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,282 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /incidents:
+    get:
+      operationId: listIncidents
+      tags: [incidents]
+      summary: List incidents with filters
+      parameters:
+        - name: country
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            $ref: "#/components/schemas/IncidentCategory"
+        - name: riskLevel
+          in: query
+          schema:
+            $ref: "#/components/schemas/RiskLevel"
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentListResponse"
+
+    post:
+      operationId: createIncident
+      tags: [incidents]
+      summary: Create a new incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentRequest"
+      responses:
+        "201":
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+
+  /incidents/{id}:
+    get:
+      operationId: getIncident
+      tags: [incidents]
+      summary: Get incident by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Incident details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /incidents/{id}/assess:
+    post:
+      operationId: assessIncident
+      tags: [threats]
+      summary: Generate AI threat assessment for an incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Threat assessment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThreatAssessment"
+
+  /threats:
+    get:
+      operationId: listThreatAssessments
+      tags: [threats]
+      summary: List threat assessments
+      parameters:
+        - name: country
+          in: query
+          schema:
+            type: string
+        - name: riskLevel
+          in: query
+          schema:
+            $ref: "#/components/schemas/RiskLevel"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of threat assessments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThreatAssessmentListResponse"
+
+  /reports/generate:
+    post:
+      operationId: generateReport
+      tags: [reports]
+      summary: Generate an intelligence report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateReportRequest"
+      responses:
+        "200":
+          description: Generated report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+
+  /reports:
+    get:
+      operationId: listReports
+      tags: [reports]
+      summary: List generated reports
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportListResponse"
+
+  /reports/{id}/export:
+    get:
+      operationId: exportReport
+      tags: [reports]
+      summary: Export report as text
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [text, pdf]
+            default: text
+      responses:
+        "200":
+          description: Exported report content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExportedReport"
+
+  /scraper/trigger:
+    post:
+      operationId: triggerScrape
+      tags: [scraper]
+      summary: Manually trigger news scraping
+      responses:
+        "200":
+          description: Scrape triggered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScrapeResult"
+
+  /scraper/status:
+    get:
+      operationId: getScraperStatus
+      tags: [scraper]
+      summary: Get current scraper status
+      responses:
+        "200":
+          description: Scraper status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScraperStatus"
+
+  /stats/dashboard:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /stats/countries:
+    get:
+      operationId: getCountryStats
+      tags: [stats]
+      summary: Get incident counts by country
+      responses:
+        "200":
+          description: Country statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CountryStatsResponse"
+
+  /stats/trending:
+    get:
+      operationId: getTrendingRegions
+      tags: [stats]
+      summary: Get trending regions and hotspots
+      responses:
+        "200":
+          description: Trending regions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendingRegionsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +318,487 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    IncidentCategory:
+      type: string
+      enum:
+        - Security
+        - Crime
+        - PublicSafety
+        - Health
+        - Hazards
+        - Cyber
+        - CivilPolitical
+        - Other
+
+    RiskLevel:
+      type: string
+      enum:
+        - Critical
+        - High
+        - HighImpact
+        - Ongoing
+        - Moderate
+        - Low
+
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        summary:
+          type: string
+        fullContent:
+          type: string
+        sourceUrl:
+          type: string
+        sourceName:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        category:
+          $ref: "#/components/schemas/IncidentCategory"
+        riskLevel:
+          $ref: "#/components/schemas/RiskLevel"
+        isVerified:
+          type: boolean
+        isOngoing:
+          type: boolean
+        publishedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+        aiSummary:
+          type: string
+          nullable: true
+      required:
+        - id
+        - title
+        - summary
+        - sourceUrl
+        - sourceName
+        - country
+        - category
+        - riskLevel
+        - isVerified
+        - isOngoing
+        - publishedAt
+        - createdAt
+        - tags
+
+    IncidentListResponse:
+      type: object
+      properties:
+        incidents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Incident"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required:
+        - incidents
+        - total
+        - limit
+        - offset
+
+    CreateIncidentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        fullContent:
+          type: string
+        sourceUrl:
+          type: string
+        sourceName:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        category:
+          $ref: "#/components/schemas/IncidentCategory"
+        riskLevel:
+          $ref: "#/components/schemas/RiskLevel"
+        publishedAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - summary
+        - sourceUrl
+        - sourceName
+        - country
+        - category
+        - riskLevel
+
+    ThreatAssessment:
+      type: object
+      properties:
+        id:
+          type: integer
+        incidentId:
+          type: integer
+          nullable: true
+        country:
+          type: string
+        region:
+          type: string
+          nullable: true
+        overallRisk:
+          $ref: "#/components/schemas/RiskLevel"
+        summary:
+          type: string
+        keyThreats:
+          type: array
+          items:
+            type: string
+        safetyRecommendations:
+          type: array
+          items:
+            type: string
+        operationalGuidance:
+          type: array
+          items:
+            type: string
+        affectedAreas:
+          type: array
+          items:
+            type: string
+        assessedAt:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - country
+        - overallRisk
+        - summary
+        - keyThreats
+        - safetyRecommendations
+        - operationalGuidance
+        - affectedAreas
+        - assessedAt
+
+    ThreatAssessmentListResponse:
+      type: object
+      properties:
+        assessments:
+          type: array
+          items:
+            $ref: "#/components/schemas/ThreatAssessment"
+        total:
+          type: integer
+      required:
+        - assessments
+        - total
+
+    GenerateReportRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentCategory"
+        includeAssessment:
+          type: boolean
+          default: true
+        includeAdvisory:
+          type: boolean
+          default: true
+      required:
+        - title
+
+    Report:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        country:
+          type: string
+          nullable: true
+        region:
+          type: string
+          nullable: true
+        content:
+          type: string
+        executiveSummary:
+          type: string
+        incidentCount:
+          type: integer
+        criticalCount:
+          type: integer
+        highCount:
+          type: integer
+        moderateCount:
+          type: integer
+        lowCount:
+          type: integer
+        advisory:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - content
+        - executiveSummary
+        - incidentCount
+        - criticalCount
+        - highCount
+        - moderateCount
+        - lowCount
+        - createdAt
+
+    ReportListResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/Report"
+        total:
+          type: integer
+      required:
+        - reports
+        - total
+
+    ExportedReport:
+      type: object
+      properties:
+        reportId:
+          type: integer
+        format:
+          type: string
+        content:
+          type: string
+        filename:
+          type: string
+      required:
+        - reportId
+        - format
+        - content
+        - filename
+
+    ScrapeResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        incidentsFound:
+          type: integer
+        incidentsAdded:
+          type: integer
+        sourcesScraped:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - success
+        - message
+        - incidentsFound
+        - incidentsAdded
+        - sourcesScraped
+        - errors
+
+    ScraperStatus:
+      type: object
+      properties:
+        isRunning:
+          type: boolean
+        lastRun:
+          type: string
+          format: date-time
+          nullable: true
+        nextRun:
+          type: string
+          format: date-time
+          nullable: true
+        totalIncidentsScraped:
+          type: integer
+        sourcesConfigured:
+          type: integer
+      required:
+        - isRunning
+        - totalIncidentsScraped
+        - sourcesConfigured
+
+    DashboardStats:
+      type: object
+      properties:
+        totalIncidents:
+          type: integer
+        criticalIncidents:
+          type: integer
+        ongoingIncidents:
+          type: integer
+        countriesAffected:
+          type: integer
+        last24hIncidents:
+          type: integer
+        last7dIncidents:
+          type: integer
+        categoryBreakdown:
+          type: object
+          additionalProperties:
+            type: integer
+        riskBreakdown:
+          type: object
+          additionalProperties:
+            type: integer
+        recentIncidents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Incident"
+        criticalAlerts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Incident"
+      required:
+        - totalIncidents
+        - criticalIncidents
+        - ongoingIncidents
+        - countriesAffected
+        - last24hIncidents
+        - last7dIncidents
+        - categoryBreakdown
+        - riskBreakdown
+        - recentIncidents
+        - criticalAlerts
+
+    CountryStat:
+      type: object
+      properties:
+        country:
+          type: string
+        count:
+          type: integer
+        criticalCount:
+          type: integer
+        highCount:
+          type: integer
+        topCategory:
+          type: string
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+      required:
+        - country
+        - count
+        - criticalCount
+        - highCount
+        - topCategory
+
+    CountryStatsResponse:
+      type: object
+      properties:
+        countries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryStat"
+      required:
+        - countries
+
+    TrendingRegion:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        incidentCount:
+          type: integer
+        riskLevel:
+          $ref: "#/components/schemas/RiskLevel"
+        trend:
+          type: string
+          enum: [rising, stable, declining]
+        topCategory:
+          type: string
+      required:
+        - name
+        - country
+        - incidentCount
+        - riskLevel
+        - trend
+        - topCategory
+
+    TrendingRegionsResponse:
+      type: object
+      properties:
+        regions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendingRegion"
+      required:
+        - regions
