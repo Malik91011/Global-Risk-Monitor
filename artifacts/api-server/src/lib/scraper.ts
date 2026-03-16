@@ -219,10 +219,11 @@ export async function runScrape(): Promise<{
           publishedAt = new Date();
         }
         
+        const cleanSummary = cleanText(item.description).slice(0, 1000) || item.title;
         await db.insert(incidentsTable).values({
           title: item.title.slice(0, 500),
-          summary: item.description.slice(0, 1000) || item.title,
-          fullContent: item.description,
+          summary: cleanSummary,
+          fullContent: cleanText(item.description),
           sourceUrl: item.link,
           sourceName: item.source,
           country,

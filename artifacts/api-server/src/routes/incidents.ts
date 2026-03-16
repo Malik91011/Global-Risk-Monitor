@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { incidentsTable, threatAssessmentsTable } from "@workspace/db/schema";
-import { eq, and, gte, lte, like, or, desc, count, sql } from "drizzle-orm";
+import { eq, and, gte, lte, ilike, or, desc, count, sql } from "drizzle-orm";
 import { generateThreatAssessment } from "../lib/assessmentGenerator.js";
 
 const router: IRouter = Router();
@@ -15,18 +15,18 @@ router.get("/", async (req, res) => {
 
     const conditions = [];
 
-    if (country) conditions.push(eq(incidentsTable.country, country));
-    if (region) conditions.push(eq(incidentsTable.region, region));
-    if (city) conditions.push(eq(incidentsTable.city, city));
+    if (country) conditions.push(ilike(incidentsTable.country, `%${country}%`));
+    if (region)  conditions.push(ilike(incidentsTable.region,  `%${region}%`));
+    if (city)    conditions.push(ilike(incidentsTable.city,    `%${city}%`));
     if (category) conditions.push(eq(incidentsTable.category, category as any));
     if (riskLevel) conditions.push(eq(incidentsTable.riskLevel, riskLevel as any));
     if (dateFrom) conditions.push(gte(incidentsTable.publishedAt, new Date(dateFrom)));
     if (dateTo) conditions.push(lte(incidentsTable.publishedAt, new Date(dateTo + "T23:59:59Z")));
     if (search) {
       conditions.push(or(
-        like(incidentsTable.title, `%${search}%`),
-        like(incidentsTable.summary, `%${search}%`),
-        like(incidentsTable.country, `%${search}%`),
+        ilike(incidentsTable.title, `%${search}%`),
+        ilike(incidentsTable.summary, `%${search}%`),
+        ilike(incidentsTable.country, `%${search}%`),
       )!);
     }
 
