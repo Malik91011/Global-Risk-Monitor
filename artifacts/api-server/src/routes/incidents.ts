@@ -6,6 +6,98 @@ import { generateThreatAssessment } from "../lib/assessmentGenerator.js";
 
 const router: IRouter = Router();
 
+// City / alias → canonical country name mappings for search expansion
+const CITY_TO_COUNTRY: Record<string, string> = {
+  // UAE
+  "dubai": "United Arab Emirates", "abu dhabi": "United Arab Emirates",
+  "sharjah": "United Arab Emirates", "uae": "United Arab Emirates",
+  // Turkey
+  "istanbul": "Turkey", "ankara": "Turkey", "izmir": "Turkey",
+  // Pakistan
+  "karachi": "Pakistan", "lahore": "Pakistan", "islamabad": "Pakistan",
+  "rawalpindi": "Pakistan", "peshawar": "Pakistan", "quetta": "Pakistan",
+  "multan": "Pakistan", "faisalabad": "Pakistan",
+  // India
+  "mumbai": "India", "delhi": "India", "new delhi": "India",
+  "kolkata": "India", "chennai": "India", "bangalore": "India", "hyderabad": "India",
+  // Saudi Arabia
+  "riyadh": "Saudi Arabia", "jeddah": "Saudi Arabia", "mecca": "Saudi Arabia",
+  "medina": "Saudi Arabia", "ksa": "Saudi Arabia",
+  // Middle East cities
+  "baghdad": "Iraq", "basra": "Iraq",
+  "tehran": "Iran", "mashhad": "Iran",
+  "beirut": "Lebanon",
+  "amman": "Jordan",
+  "damascus": "Syria", "aleppo": "Syria",
+  "cairo": "Egypt", "alexandria": "Egypt",
+  "doha": "Qatar",
+  "kuwait city": "Kuwait",
+  "muscat": "Oman",
+  "manama": "Bahrain",
+  "sanaa": "Yemen", "aden": "Yemen",
+  "gaza": "Palestine", "ramallah": "Palestine", "west bank": "Palestine",
+  "tel aviv": "Israel", "jerusalem": "Israel",
+  "kabul": "Afghanistan",
+  // Africa cities
+  "nairobi": "Kenya", "mombasa": "Kenya",
+  "lagos": "Nigeria", "abuja": "Nigeria", "kano": "Nigeria",
+  "accra": "Ghana",
+  "addis ababa": "Ethiopia",
+  "johannesburg": "South Africa", "cape town": "South Africa", "pretoria": "South Africa",
+  "mogadishu": "Somalia",
+  "khartoum": "Sudan",
+  "tripoli": "Libya",
+  "tunis": "Tunisia",
+  "casablanca": "Morocco", "rabat": "Morocco",
+  "kinshasa": "DR Congo",
+  "dakar": "Senegal",
+  "kampala": "Uganda",
+  "dar es salaam": "Tanzania",
+  "harare": "Zimbabwe",
+  // Europe cities
+  "kyiv": "Ukraine", "kiev": "Ukraine", "kharkiv": "Ukraine",
+  "moscow": "Russia", "st. petersburg": "Russia",
+  "london": "United Kingdom",
+  "paris": "France",
+  "berlin": "Germany",
+  "rome": "Italy",
+  "madrid": "Spain",
+  "warsaw": "Poland",
+  "belgrade": "Serbia",
+  "tbilisi": "Georgia",
+  "baku": "Azerbaijan",
+  "yerevan": "Armenia",
+  // East Asia
+  "beijing": "China", "shanghai": "China", "hong kong": "China",
+  "tokyo": "Japan", "osaka": "Japan",
+  "seoul": "South Korea", "busan": "South Korea",
+  "taipei": "Taiwan",
+  "pyongyang": "North Korea",
+  // Southeast Asia
+  "bangkok": "Thailand",
+  "manila": "Philippines",
+  "jakarta": "Indonesia",
+  "kuala lumpur": "Malaysia",
+  "singapore": "Singapore",
+  "hanoi": "Vietnam", "ho chi minh": "Vietnam",
+  "yangon": "Myanmar",
+  "phnom penh": "Cambodia",
+  // Americas
+  "mexico city": "Mexico",
+  "bogota": "Colombia",
+  "lima": "Peru",
+  "santiago": "Chile",
+  "buenos aires": "Argentina",
+  "caracas": "Venezuela",
+  "havana": "Cuba",
+  "port-au-prince": "Haiti",
+};
+
+function resolveCountrySearch(input: string): string {
+  const lower = input.toLowerCase().trim();
+  return CITY_TO_COUNTRY[lower] ?? input;
+}
+
 router.get("/", async (req, res) => {
   try {
     const {
@@ -15,7 +107,15 @@ router.get("/", async (req, res) => {
 
     const conditions = [];
 
-    if (country) conditions.push(ilike(incidentsTable.country, `%${country}%`));
+    if (country) {
+      const resolved = resolveCountrySearch(country);
+      // If resolved to a different name, search by exact canonical name; otherwise do ILIKE
+      if (resolved !== country) {
+        conditions.push(ilike(incidentsTable.country, `%${resolved}%`));
+      } else {
+        conditions.push(ilike(incidentsTable.country, `%${country}%`));
+      }
+    }
     if (region)  conditions.push(ilike(incidentsTable.region,  `%${region}%`));
     if (city)    conditions.push(ilike(incidentsTable.city,    `%${city}%`));
     if (category) conditions.push(eq(incidentsTable.category, category as any));
