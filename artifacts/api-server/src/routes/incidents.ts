@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { incidentsTable, threatAssessmentsTable } from "@workspace/db/schema";
 import { eq, and, gte, lte, ilike, or, desc, count, sql } from "drizzle-orm";
-import { generateThreatAssessment } from "../lib/assessmentGenerator.js";
+import { generateThreatAssessment, generateIncidentBullets } from "../lib/assessmentGenerator.js";
 
 const router: IRouter = Router();
 
@@ -240,6 +240,7 @@ router.post("/:id/assess", async (req, res) => {
 });
 
 function formatIncident(i: any) {
+  const { assessment, advisory } = generateIncidentBullets(i.category, i.riskLevel);
   return {
     ...i,
     publishedAt: i.publishedAt instanceof Date ? i.publishedAt.toISOString() : i.publishedAt,
@@ -251,6 +252,8 @@ function formatIncident(i: any) {
     longitude: i.longitude || null,
     aiSummary: i.aiSummary || null,
     fullContent: i.fullContent || null,
+    assessment,
+    advisory,
   };
 }
 

@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { reportsTable, incidentsTable } from "@workspace/db/schema";
-import { eq, and, gte, lte, inArray, desc, count } from "drizzle-orm";
+import { eq, and, gte, lte, inArray, ilike, desc, count } from "drizzle-orm";
 import { generateReportContent } from "../lib/assessmentGenerator.js";
 
 const router: IRouter = Router();
@@ -11,7 +11,7 @@ router.post("/generate", async (req, res) => {
     const { title, country, region, dateFrom, dateTo, categories, includeAssessment = true, includeAdvisory = true } = req.body;
 
     const conditions = [];
-    if (country) conditions.push(eq(incidentsTable.country, country));
+    if (country) conditions.push(ilike(incidentsTable.country, `%${country}%`));
     if (region) conditions.push(eq(incidentsTable.region, region));
     if (dateFrom) conditions.push(gte(incidentsTable.publishedAt, new Date(dateFrom)));
     if (dateTo) conditions.push(lte(incidentsTable.publishedAt, new Date(dateTo + "T23:59:59Z")));

@@ -1,0 +1,59 @@
+Update my Global Risk Monitor website with the following improvements and fixes:
+
+----------------------------------------
+1. ADD ASSESSMENT & ADVISORY TO ALERTS
+----------------------------------------
+
+For every alert displayed on the dashboard:
+
+• Add two optional sections:
+  - Assessment
+  - Advisory
+
+Requirements:
+- Each section must be VERY brief.
+- Limited to 3–4 bullet points maximum.
+- Written in concise security/intelligence-style language.
+- Generated per alert but structured so it can be edited later if needed.
+
+Visibility:
+- Assessment and Advisory must NOT be visible by default.
+- Add a button or toggle on each alert:
+  "View Assessment & Advisory"
+- Only display the content when the user clicks it.
+- Viewing must be fully at the discretion of the client/user.
+
+UI:
+- Keep existing website design and styling.
+- Show content in a clean expandable card under the alert.
+- Must work smoothly on desktop and mobile.
+- Expansion should NOT reload the page.
+
+Backend/Data:
+- Update alert data structure/API to include:
+    assessment: []
+    advisory: []
+- Each array contains 3–4 short bullet points.
+
+----------------------------------------
+2. FIX INTELLIGENCE REPORTS TAB
+----------------------------------------
+
+The "Intelligence Reports" tab is currently not working and does NOT generate reports.
+
+Fix requirements:
+- Identify why reports are not being generated.
+- Ensure clicking "Generate Report" produces a report successfully.
+- Reports should dynamically compile existing alerts and risk data.
+- Display generated reports properly inside the Intelligence Reports tab.
+- Ensure no console errors occur.
+- Reports must load reliably without refreshing the whole site.
+
+----------------------------------------
+GENERAL REQUIREMENTS
+----------------------------------------
+
+- Do NOT break existing alerts, charts, or dashboard layout.
+- Maintain current styling and responsiveness.
+- Keep implementation clean and beginner-friendly.
+- Ensure all features work on the deployed Replit version.

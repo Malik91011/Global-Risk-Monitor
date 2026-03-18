@@ -2,7 +2,7 @@ import type { Incident, ThreatAssessment } from "@workspace/db";
 
 type RiskLevel = "Critical" | "High" | "HighImpact" | "Ongoing" | "Moderate" | "Low";
 
-const THREAT_TEMPLATES: Record<string, string[]> = {
+export const THREAT_TEMPLATES: Record<string, string[]> = {
   Security: [
     "Armed groups operating in the region",
     "Risk of targeted attacks on foreign nationals",
@@ -59,7 +59,7 @@ const THREAT_TEMPLATES: Record<string, string[]> = {
   ],
 };
 
-const SAFETY_RECOMMENDATIONS: Record<string, string[]> = {
+export const SAFETY_RECOMMENDATIONS: Record<string, string[]> = {
   Security: [
     "Avoid areas of known militant activity",
     "Travel in secure convoys with local knowledge",
@@ -176,6 +176,27 @@ const OPERATIONAL_GUIDANCE: Record<string, string[]> = {
     "Consult with local partners and authorities",
   ],
 };
+
+export function generateIncidentBullets(
+  category: string,
+  riskLevel: string
+): { assessment: string[]; advisory: string[] } {
+  const cat = category || "Other";
+  const threats = THREAT_TEMPLATES[cat] || THREAT_TEMPLATES.Other;
+  const recs = SAFETY_RECOMMENDATIONS[cat] || SAFETY_RECOMMENDATIONS.Other;
+
+  const riskPrefix =
+    riskLevel === "Critical" ? "Immediate threat to life and assets." :
+    riskLevel === "High" || riskLevel === "HighImpact" ? "Significant security concern requiring elevated precautions." :
+    riskLevel === "Ongoing" ? "Evolving situation — continued monitoring required." :
+    riskLevel === "Moderate" ? "Elevated risk — standard protocols should be enhanced." :
+    "Low-level risk — standard precautions apply.";
+
+  const assessment = [riskPrefix, ...threats.slice(0, 3)].slice(0, 4);
+  const advisory = recs.slice(0, 4);
+
+  return { assessment, advisory };
+}
 
 export function generateThreatAssessment(
   country: string,
