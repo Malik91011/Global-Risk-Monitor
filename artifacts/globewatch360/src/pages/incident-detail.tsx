@@ -2,7 +2,7 @@ import { useGetIncident, useAssessIncident } from "@workspace/api-client-react";
 import { useRoute, Link } from "wouter";
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Calendar, MapPin, ShieldAlert, Cpu, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Calendar, MapPin, ShieldAlert, Cpu, CheckCircle2, Globe2 } from "lucide-react";
 import { RiskBadge, CategoryBadge } from "@/components/badges";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
@@ -82,7 +82,7 @@ export default function IncidentDetail() {
               </span>
             )}
           </div>
-          
+
           <h1 className="text-3xl md:text-4xl font-display font-bold leading-tight">
             {incident.title}
           </h1>
@@ -142,8 +142,8 @@ export default function IncidentDetail() {
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             Generate a comprehensive AI threat assessment including operational guidance, safety recommendations, and affected areas.
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="font-bold bg-primary text-primary-foreground hover:bg-primary/90"
             onClick={handleAssess}
             disabled={isAssessing}

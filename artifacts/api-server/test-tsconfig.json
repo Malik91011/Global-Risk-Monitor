@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "target": "es2022",
+    "esModuleInterop": true,
+    "strict": true
+  },
+  "include": [
+    "c:/Users/hamma/Downloads/Global-Risk-Monitor/artifacts/api-server/src/lib/ai-extractor.ts"
+  ]
+}

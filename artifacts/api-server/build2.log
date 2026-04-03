@@ -1,0 +1,1 @@
+src/routes/reports.ts(72,27): error TS7030: Not all code paths return a value.

@@ -1,41 +1,35 @@
 import { Router, type IRouter } from "express";
-import { db } from "@workspace/db";
-import { threatAssessmentsTable, incidentsTable } from "@workspace/db/schema";
-import { eq, and, desc, count, gte } from "drizzle-orm";
-import { generateThreatAssessment } from "../lib/assessmentGenerator.js";
+import { connectDB, ThreatAssessmentModel } from "@workspace/db";
 import { formatAssessment } from "./incidents.js";
 
 const router: IRouter = Router();
 
 router.get("/", async (req, res) => {
   try {
+    await connectDB();
     const { country, riskLevel, limit = "20" } = req.query as Record<string, string>;
 
-    const conditions = [];
-    if (country) conditions.push(eq(threatAssessmentsTable.country, country));
-    if (riskLevel) conditions.push(eq(threatAssessmentsTable.overallRisk, riskLevel as any));
+    const query: any = {};
+    if (country) query.country = country;
+    if (riskLevel) query.overallRisk = riskLevel;
 
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
     const limitNum = Math.min(parseInt(limit) || 20, 100);
 
-    const [assessments, totalResult] = await Promise.all([
-      db.select()
-        .from(threatAssessmentsTable)
-        .where(whereClause)
-        .orderBy(desc(threatAssessmentsTable.assessedAt))
-        .limit(limitNum),
-      db.select({ count: count() })
-        .from(threatAssessmentsTable)
-        .where(whereClause),
+    const [assessments, total] = await Promise.all([
+      ThreatAssessmentModel.find(query)
+        .sort({ assessedAt: -1 })
+        .limit(limitNum)
+        .exec(),
+      ThreatAssessmentModel.countDocuments(query).exec(),
     ]);
 
-    res.json({
-      assessments: assessments.map(formatAssessment),
-      total: totalResult[0]?.count ?? 0,
+    return res.json({
+      assessments: assessments.map((a) => formatAssessment(a.toJSON())),
+      total: total || 0,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server error", message: String(err) });
+    return res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 

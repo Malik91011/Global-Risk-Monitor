@@ -1,13 +1,91 @@
-import { useListThreatAssessments } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useListThreatAssessments, useListIncidents, useAssessIncident } from "@workspace/api-client-react";
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { RiskBadge } from "@/components/badges";
 import { ShieldAlert, MapPin, AlertCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+
+function NewAssessmentDialog({ 
+  open, 
+  onOpenChange,
+  onSuccess
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}) {
+  const { toast } = useToast();
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string>("");
+  const { data: incidentsData, isLoading: isLoadingIncidents } = useListIncidents({ limit: 50 });
+  const { mutate: assess, isPending: isAssessing } = useAssessIncident();
+
+  const handleAssess = () => {
+    if (!selectedIncidentId) return;
+    assess({ id: Number(selectedIncidentId) }, {
+      onSuccess: () => {
+        toast({
+          title: "Assessment Complete",
+          description: "AI threat assessment has been generated successfully.",
+        });
+        onSuccess();
+        onOpenChange(false);
+      },
+      onError: () => {
+        toast({
+          title: "Assessment Failed",
+          description: "Could not generate assessment at this time.",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New Threat Assessment</DialogTitle>
+          <DialogDescription>
+            Select a recent incident to generate a comprehensive AI threat assessment.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4 py-4">
+          <Select value={selectedIncidentId} onValueChange={setSelectedIncidentId} disabled={isLoadingIncidents}>
+            <SelectTrigger>
+              <SelectValue placeholder={isLoadingIncidents ? "Loading incidents..." : "Select an incident"} />
+            </SelectTrigger>
+            <SelectContent>
+              {incidentsData?.incidents?.map(inc => (
+                <SelectItem key={inc.id} value={inc.id.toString()}>
+                  {inc.title} - {format(new Date(inc.publishedAt), 'MMM d, yyyy')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAssessing}>
+            Cancel
+          </Button>
+          <Button onClick={handleAssess} disabled={!selectedIncidentId || isAssessing}>
+            {isAssessing ? "Generating..." : "Generate Assessment"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Threats() {
-  const { data, isLoading } = useListThreatAssessments({ limit: 20 });
+  const { data, isLoading, refetch } = useListThreatAssessments({ limit: 20 });
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <Layout>
@@ -17,10 +95,19 @@ export default function Threats() {
             <h1 className="text-3xl font-display font-bold text-foreground">Threat Assessments</h1>
             <p className="text-muted-foreground mt-1">AI-generated strategic risk analyses</p>
           </div>
-          <Button className="bg-primary text-primary-foreground">
-            <ShieldAlert className="w-4 h-4 mr-2" />
-            New Assessment
-          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary text-primary-foreground">
+                <ShieldAlert className="w-4 h-4 mr-2" />
+                New Assessment
+              </Button>
+            </DialogTrigger>
+            <NewAssessmentDialog 
+              open={dialogOpen} 
+              onOpenChange={setDialogOpen} 
+              onSuccess={() => refetch()} 
+            />
+          </Dialog>
         </div>
 
         {isLoading ? (
@@ -31,7 +118,7 @@ export default function Threats() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data?.assessments.map(assessment => (
+            {data?.assessments?.map(assessment => (
               <Card key={assessment.id} className="glass-panel overflow-hidden flex flex-col hover:border-primary/30 transition-colors">
                 <CardHeader className="bg-secondary/20 border-b border-border/50 pb-4">
                   <div className="flex justify-between items-start mb-2">

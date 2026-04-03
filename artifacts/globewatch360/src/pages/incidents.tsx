@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useListIncidents, IncidentCategory, RiskLevel } from "@workspace/api-client-react";
+import { useListIncidents, IncidentCategory, RiskLevel, getListIncidentsQueryKey, Incident } from "@workspace/api-client-react";
 import Layout from "@/components/layout";
 import IncidentCard from "@/components/incident-card";
 import { Input } from "@/components/ui/input";
@@ -12,52 +12,54 @@ import { format } from "date-fns";
 type TabType = "all" | "countries" | "regions" | "cities" | "timeline";
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
-  { id: "all",       label: "All",      icon: <LayoutList className="w-4 h-4" /> },
+  { id: "all", label: "All", icon: <LayoutList className="w-4 h-4" /> },
   { id: "countries", label: "Countries", icon: <Globe className="w-4 h-4" /> },
-  { id: "regions",   label: "Regions",  icon: <Map className="w-4 h-4" /> },
-  { id: "cities",    label: "Cities",   icon: <Building2 className="w-4 h-4" /> },
-  { id: "timeline",  label: "Timeline", icon: <Calendar className="w-4 h-4" /> },
+  { id: "regions", label: "Regions", icon: <Map className="w-4 h-4" /> },
+  { id: "cities", label: "Cities", icon: <Building2 className="w-4 h-4" /> },
+  { id: "timeline", label: "Timeline", icon: <Calendar className="w-4 h-4" /> },
 ];
 
 const RISK_LEVELS = Object.values(RiskLevel);
-const CATEGORIES  = Object.values(IncidentCategory);
+const CATEGORIES = Object.values(IncidentCategory);
 
 const RISK_COLORS: Record<string, string> = {
-  Critical:   "text-red-400",
-  High:       "text-orange-400",
+  Critical: "text-red-400",
+  High: "text-orange-400",
   HighImpact: "text-orange-500",
-  Ongoing:    "text-purple-400",
-  Moderate:   "text-yellow-400",
-  Low:        "text-green-400",
+  Ongoing: "text-purple-400",
+  Moderate: "text-yellow-400",
+  Low: "text-green-400",
 };
 
 export default function Incidents() {
   const [activeTab, setActiveTab] = useState<TabType>("all");
 
   /* ── filters ── */
-  const [search,   setSearch]   = useState("");
-  const [country,  setCountry]  = useState("");
-  const [region,   setRegion]   = useState("");
-  const [city,     setCity]     = useState("");
+  const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") || "");
+  const [country, setCountry] = useState("");
+  const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");
   const [category, setCategory] = useState<IncidentCategory | "ALL">("ALL");
-  const [risk,     setRisk]     = useState<RiskLevel | "ALL">("ALL");
+  const [risk, setRisk] = useState<RiskLevel | "ALL">("ALL");
   const [dateFrom, setDateFrom] = useState("");
-  const [dateTo,   setDateTo]   = useState("");
-  const [page,     setPage]     = useState(0);
+  const [dateTo, setDateTo] = useState("");
+  const [page, setPage] = useState(0);
   const limit = 20;
 
-  const { data, isLoading, isFetching } = useListIncidents({
-    search:    search    || undefined,
-    country:   country   || undefined,
-    region:    region    || undefined,
-    city:      city      || undefined,
-    category:  category  !== "ALL" ? category  : undefined,
-    riskLevel: risk      !== "ALL" ? risk       : undefined,
-    dateFrom:  dateFrom  || undefined,
-    dateTo:    dateTo    || undefined,
+  const params = {
+    search: search || undefined,
+    country: country || undefined,
+    region: region || undefined,
+    city: city || undefined,
+    category: category !== "ALL" ? category : undefined,
+    riskLevel: risk !== "ALL" ? risk : undefined,
+    dateFrom: dateFrom || undefined,
+    dateTo: dateTo || undefined,
     limit,
     offset: page * limit,
-  });
+  };
+
+  const { data, isLoading, isFetching } = useListIncidents(params, { query: { queryKey: getListIncidentsQueryKey(params), refetchInterval: 30000 } });
 
   const clearAll = () => {
     setSearch(""); setCountry(""); setRegion(""); setCity("");
@@ -68,22 +70,22 @@ export default function Incidents() {
   const activeCount = [search, country, region, city]
     .filter(Boolean).length
     + (category !== "ALL" ? 1 : 0)
-    + (risk     !== "ALL" ? 1 : 0)
-    + (dateFrom  ? 1 : 0)
-    + (dateTo    ? 1 : 0);
+    + (risk !== "ALL" ? 1 : 0)
+    + (dateFrom ? 1 : 0)
+    + (dateTo ? 1 : 0);
 
   /* ── group helpers ── */
-  const group = (key: (i: (typeof data)["incidents"][0]) => string) =>
-    (data?.incidents ?? []).reduce((acc: Record<string, typeof data.incidents>, inc) => {
+  const group = (key: (i: Incident) => string) =>
+    (data?.incidents ?? []).reduce((acc: Record<string, Incident[]>, inc) => {
       const k = key(inc) || "(Unknown)";
       (acc[k] = acc[k] ?? []).push(inc);
       return acc;
     }, {});
 
-  const byCountry  = group(i => i.country);
-  const byRegion   = group(i => i.region  ?? "(No Region)");
-  const byCity     = group(i => i.city    ?? "(No City)");
-  const byDate     = group(i => {
+  const byCountry = group(i => i.country);
+  const byRegion = group(i => i.region ?? "(No Region)");
+  const byCity = group(i => i.city ?? "(No City)");
+  const byDate = group(i => {
     try { return format(new Date(i.publishedAt), "MMMM d, yyyy"); } catch { return "Unknown Date"; }
   });
 
@@ -103,11 +105,10 @@ export default function Incidents() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === tab.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                }`}
             >
               {tab.icon}{tab.label}
             </button>
@@ -230,14 +231,14 @@ export default function Incidents() {
           {activeCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/5">
               <span className="text-xs text-muted-foreground font-medium">Active filters:</span>
-              {search   && <Chip label={`Keyword: "${search}"`}  onRemove={() => setSearch("")} />}
-              {country  && <Chip label={`Country: ${country}`}   onRemove={() => setCountry("")} />}
-              {region   && <Chip label={`Region: ${region}`}     onRemove={() => setRegion("")} />}
-              {city     && <Chip label={`City: ${city}`}         onRemove={() => setCity("")} />}
-              {risk     !== "ALL" && <Chip label={`Risk: ${risk}`}         onRemove={() => setRisk("ALL")} />}
+              {search && <Chip label={`Keyword: "${search}"`} onRemove={() => setSearch("")} />}
+              {country && <Chip label={`Country: ${country}`} onRemove={() => setCountry("")} />}
+              {region && <Chip label={`Region: ${region}`} onRemove={() => setRegion("")} />}
+              {city && <Chip label={`City: ${city}`} onRemove={() => setCity("")} />}
+              {risk !== "ALL" && <Chip label={`Risk: ${risk}`} onRemove={() => setRisk("ALL")} />}
               {category !== "ALL" && <Chip label={`Category: ${category}`} onRemove={() => setCategory("ALL")} />}
-              {dateFrom && <Chip label={`From: ${dateFrom}`}     onRemove={() => setDateFrom("")} />}
-              {dateTo   && <Chip label={`To: ${dateTo}`}         onRemove={() => setDateTo("")} />}
+              {dateFrom && <Chip label={`From: ${dateFrom}`} onRemove={() => setDateFrom("")} />}
+              {dateTo && <Chip label={`To: ${dateTo}`} onRemove={() => setDateTo("")} />}
               <button onClick={clearAll} className="ml-2 text-xs text-red-400 hover:text-red-300 underline">
                 Clear all
               </button>
@@ -256,7 +257,7 @@ export default function Incidents() {
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 <p className="text-muted-foreground text-sm">Loading incidents…</p>
               </div>
-            ) : !data?.incidents.length ? (
+            ) : !data?.incidents?.length ? (
               <div className="text-center py-20 bg-card rounded-xl border border-white/5">
                 <Filter className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
                 <h3 className="text-lg font-medium text-foreground">No incidents found</h3>

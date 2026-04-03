@@ -5,6 +5,8 @@ import threatsRouter from "./threats.js";
 import reportsRouter from "./reports.js";
 import scraperRouter from "./scraper.js";
 import statsRouter from "./stats.js";
+import { profileRouter } from "./profile.js";
+import { authRouter } from "./auth.js";
 
 const router: IRouter = Router();
 
@@ -14,5 +16,7 @@ router.use("/threats", threatsRouter);
 router.use("/reports", reportsRouter);
 router.use("/scraper", scraperRouter);
 router.use("/stats", statsRouter);
+router.use("/profile", profileRouter);
+router.use("/auth", authRouter);
 
 export default router;

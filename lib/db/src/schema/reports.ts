@@ -1,27 +1,53 @@
-import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import mongoose, { Schema } from "mongoose";
+import { z } from "zod";
 
-export const reportsTable = pgTable("reports", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  country: text("country"),
-  region: text("region"),
-  content: text("content").notNull(),
-  executiveSummary: text("executive_summary").notNull(),
-  incidentCount: integer("incident_count").notNull().default(0),
-  criticalCount: integer("critical_count").notNull().default(0),
-  highCount: integer("high_count").notNull().default(0),
-  moderateCount: integer("moderate_count").notNull().default(0),
-  lowCount: integer("low_count").notNull().default(0),
-  advisory: text("advisory"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const insertReportSchema = createInsertSchema(reportsTable).omit({
-  id: true,
-  createdAt: true,
+export const insertReportSchema = z.object({
+  title: z.string(),
+  country: z.string().nullable().optional(),
+  region: z.string().nullable().optional(),
+  content: z.string(),
+  executiveSummary: z.string(),
+  incidentCount: z.number().default(0),
+  criticalCount: z.number().default(0),
+  highCount: z.number().default(0),
+  moderateCount: z.number().default(0),
+  lowCount: z.number().default(0),
+  advisory: z.string().nullable().optional(),
 });
 
 export type InsertReport = z.infer<typeof insertReportSchema>;
-export type Report = typeof reportsTable.$inferSelect;
+
+export type Report = InsertReport & {
+  id: string;
+  createdAt: Date;
+};
+
+const reportSchema = new Schema({
+  title: { type: String, required: true },
+  country: { type: String },
+  region: { type: String },
+  content: { type: String, required: true },
+  executiveSummary: { type: String, required: true },
+  incidentCount: { type: Number, default: 0 },
+  criticalCount: { type: Number, default: 0 },
+  highCount: { type: Number, default: 0 },
+  moderateCount: { type: Number, default: 0 },
+  lowCount: { type: Number, default: 0 },
+  advisory: { type: String },
+  createdAt: { type: Date, default: Date.now },
+}, {
+  toJSON: {
+    virtuals: true,
+    transform: function (doc: any, ret: any) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
+});
+
+reportSchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
+
+export const ReportModel = mongoose.models.Report || mongoose.model("Report", reportSchema);

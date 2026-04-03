@@ -1,27 +1,53 @@
-import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
-import { riskLevelEnum } from "./incidents";
+import mongoose, { Schema } from "mongoose";
+import { z } from "zod";
+import { riskLevelEnum } from "./incidents.js";
 
-export const threatAssessmentsTable = pgTable("threat_assessments", {
-  id: serial("id").primaryKey(),
-  incidentId: integer("incident_id"),
-  country: text("country").notNull(),
-  region: text("region"),
-  overallRisk: riskLevelEnum("overall_risk").notNull(),
-  summary: text("summary").notNull(),
-  keyThreats: text("key_threats").array().notNull().default([]),
-  safetyRecommendations: text("safety_recommendations").array().notNull().default([]),
-  operationalGuidance: text("operational_guidance").array().notNull().default([]),
-  affectedAreas: text("affected_areas").array().notNull().default([]),
-  assessedAt: timestamp("assessed_at").notNull().defaultNow(),
-  validUntil: timestamp("valid_until"),
-});
-
-export const insertThreatAssessmentSchema = createInsertSchema(threatAssessmentsTable).omit({
-  id: true,
-  assessedAt: true,
+export const insertThreatAssessmentSchema = z.object({
+  incidentId: z.string().nullable().optional(), // Now referencing string ObjectId
+  country: z.string(),
+  region: z.string().nullable().optional(),
+  overallRisk: z.enum(riskLevelEnum),
+  summary: z.string(),
+  keyThreats: z.array(z.string()).default([]),
+  safetyRecommendations: z.array(z.string()).default([]),
+  operationalGuidance: z.array(z.string()).default([]),
+  affectedAreas: z.array(z.string()).default([]),
+  validUntil: z.date().nullable().optional(),
 });
 
 export type InsertThreatAssessment = z.infer<typeof insertThreatAssessmentSchema>;
-export type ThreatAssessment = typeof threatAssessmentsTable.$inferSelect;
+
+export type ThreatAssessment = InsertThreatAssessment & {
+  id: string;
+  assessedAt: Date;
+};
+
+const threatAssessmentSchema = new Schema({
+  incidentId: { type: Schema.Types.ObjectId, ref: 'Incident' },
+  country: { type: String, required: true },
+  region: { type: String },
+  overallRisk: { type: String, enum: riskLevelEnum, required: true },
+  summary: { type: String, required: true },
+  keyThreats: { type: [String], default: [] },
+  safetyRecommendations: { type: [String], default: [] },
+  operationalGuidance: { type: [String], default: [] },
+  affectedAreas: { type: [String], default: [] },
+  assessedAt: { type: Date, default: Date.now },
+  validUntil: { type: Date },
+}, {
+  toJSON: {
+    virtuals: true,
+    transform: function (doc: any, ret: any) {
+      ret.id = ret._id.toString();
+      ret.incidentId = ret.incidentId?.toString() || null;
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
+});
+
+threatAssessmentSchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
+
+export const ThreatAssessmentModel = mongoose.models.ThreatAssessment || mongoose.model("ThreatAssessment", threatAssessmentSchema);

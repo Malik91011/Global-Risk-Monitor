@@ -19,6 +19,10 @@ tags:
     description: News scraping operations
   - name: stats
     description: Dashboard statistics
+  - name: profile
+    description: User profile and settings
+  - name: auth
+    description: Authentication operations
 paths:
   /healthz:
     get:
@@ -32,6 +36,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile and settings
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+    post:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile and settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "200":
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout user
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
 
   /incidents:
     get:
@@ -310,6 +361,29 @@ paths:
 
 components:
   schemas:
+    UserProfile:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        theme:
+          type: string
+        alertsEnabled:
+          type: boolean
+        syncInterval:
+          type: string
+      required:
+        - fullName
+        - email
+        - role
+        - theme
+        - alertsEnabled
+        - syncInterval
+
     HealthStatus:
       type: object
       properties:

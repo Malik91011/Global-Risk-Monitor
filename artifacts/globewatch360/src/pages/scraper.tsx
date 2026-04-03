@@ -86,7 +86,7 @@ export default function Scraper() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-secondary/30 border border-white/5 text-center">
                   <div className="text-3xl font-display font-bold text-foreground mb-1">
-                    {status?.totalIncidentsScraped.toLocaleString() || 0}
+                    {status?.totalIncidentsScraped?.toLocaleString() || 0}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Total Indexed</div>
                 </div>

@@ -15,6 +15,46 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
+ * @summary Get user profile and settings
+ */
+export const GetProfileResponse = zod.object({
+  fullName: zod.string(),
+  email: zod.string(),
+  role: zod.string(),
+  theme: zod.string(),
+  alertsEnabled: zod.boolean(),
+  syncInterval: zod.string(),
+});
+
+/**
+ * @summary Update user profile and settings
+ */
+export const UpdateProfileBody = zod.object({
+  fullName: zod.string(),
+  email: zod.string(),
+  role: zod.string(),
+  theme: zod.string(),
+  alertsEnabled: zod.boolean(),
+  syncInterval: zod.string(),
+});
+
+export const UpdateProfileResponse = zod.object({
+  fullName: zod.string(),
+  email: zod.string(),
+  role: zod.string(),
+  theme: zod.string(),
+  alertsEnabled: zod.boolean(),
+  syncInterval: zod.string(),
+});
+
+/**
+ * @summary Logout user
+ */
+export const LogoutResponse = zod.object({
+  success: zod.boolean().optional(),
+});
+
+/**
  * @summary List incidents with filters
  */
 export const listIncidentsQueryLimitDefault = 50;

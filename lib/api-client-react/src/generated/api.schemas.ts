@@ -5,6 +5,15 @@
  * GlobeWatch360 Global News Intelligence API
  * OpenAPI spec version: 0.1.0
  */
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  role: string;
+  theme: string;
+  alertsEnabled: boolean;
+  syncInterval: string;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -213,6 +222,10 @@ export interface TrendingRegion {
 export interface TrendingRegionsResponse {
   regions: TrendingRegion[];
 }
+
+export type Logout200 = {
+  success?: boolean;
+};
 
 export type ListIncidentsParams = {
   country?: string;

@@ -1,0 +1,14 @@
+{
+  "crons": [
+    {
+      "path": "/api/scraper/trigger",
+      "schedule": "0 */4 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api-server/api/$1"
+    }
+  ]
+}

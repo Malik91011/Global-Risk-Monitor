@@ -1,0 +1,23 @@
+2:18:25 AM - Projects in this build: 
+    * ../../lib/db/tsconfig.json
+    * ../../lib/api-zod/tsconfig.json
+    * tsconfig.json
+
+2:18:25 AM - Project '../../lib/db/tsconfig.json' is up to date because newest input '../../lib/db/src/schema/index.ts' is older than output '../../lib/db/tsconfig.tsbuildinfo'
+
+2:18:25 AM - Project '../../lib/api-zod/tsconfig.json' is out of date because buildinfo file '../../lib/api-zod/tsconfig.tsbuildinfo' indicates that program needs to report errors.
+
+2:18:25 AM - Building project 'C:/Users/hamma/Downloads/Global-Risk-Monitor/lib/api-zod/tsconfig.json'...
+
+../../lib/api-zod/src/index.ts(2,1): error TS2308: Module "./generated/api" has already exported a member named 'ExportReportParams'. Consider explicitly re-exporting to resolve the ambiguity.
+2:18:29 AM - Project 'tsconfig.json' is out of date because output file 'tsconfig.tsbuildinfo' does not exist
+
+2:18:29 AM - Building project 'C:/Users/hamma/Downloads/Global-Risk-Monitor/artifacts/api-server/tsconfig.json'...
+
+src/lib/ai-extractor.ts(41,40): error TS2339: Property 'chat' does not exist on type 'Beta'.
+src/lib/ai-extractor.ts(63,22): error TS2589: Type instantiation is excessively deep and possibly infinite.
+src/lib/ai-extractor.ts(63,40): error TS2345: Argument of type 'ZodObject<{ incidents: ZodArray<ZodObject<{ title: ZodString; dateTimeUtc: ZodString; location: ZodObject<{ country: ZodString; region: ZodOptional<ZodNullable<ZodString>>; city: ZodOptional<...>; }, "strip", ZodTypeAny, { ...; }, { ...; }>; category: ZodString; summary: ZodString; sourceUrl: ZodString; }, "strip", ...' is not assignable to parameter of type 'ZodType<any, ZodTypeDef, any> | ZodType<...>'.
+  Type 'ZodObject<{ incidents: ZodArray<ZodObject<{ title: ZodString; dateTimeUtc: ZodString; location: ZodObject<{ country: ZodString; region: ZodOptional<ZodNullable<ZodString>>; city: ZodOptional<...>; }, "strip", ZodTypeAny, { ...; }, { ...; }>; category: ZodString; summary: ZodString; sourceUrl: ZodString; }, "strip", ...' is not assignable to type 'ZodType<any, ZodTypeDef, any>'.
+    The types returned by '_refinement(...)' are incompatible between these types.
+      Type 'ZodEffects<ZodObject<{ incidents: ZodArray<ZodObject<{ title: ZodString; dateTimeUtc: ZodString; location: ZodObject<{ country: ZodString; region: ZodOptional<ZodNullable<ZodString>>; city: ZodOptional<...>; }, "strip", ZodTypeAny, { ...; }, { ...; }>; category: ZodString; summary: ZodString; sourceUrl: ZodString; }...' is missing the following properties from type 'ZodEffects<ZodType<any, ZodTypeDef, any>, any, any>': _type, _output, _input, _def, and 33 more.
+src/routes/reports.ts(72,27): error TS7030: Not all code paths return a value.

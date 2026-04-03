@@ -1,12 +1,11 @@
 import { Router, type IRouter } from "express";
-import { db } from "@workspace/db";
-import { incidentsTable } from "@workspace/db/schema";
-import { eq, gte, desc, sql, count } from "drizzle-orm";
+import { connectDB, IncidentModel } from "@workspace/db";
 
 const router: IRouter = Router();
 
 router.get("/dashboard", async (_req, res) => {
   try {
+    await connectDB();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -22,153 +21,153 @@ router.get("/dashboard", async (_req, res) => {
       criticalAlerts,
       countriesResult,
     ] = await Promise.all([
-      db.select({ count: count() }).from(incidentsTable),
-      db.select({ count: count() }).from(incidentsTable).where(eq(incidentsTable.riskLevel, "Critical")),
-      db.select({ count: count() }).from(incidentsTable).where(eq(incidentsTable.isOngoing, true)),
-      db.select({ count: count() }).from(incidentsTable).where(gte(incidentsTable.publishedAt, oneDayAgo)),
-      db.select({ count: count() }).from(incidentsTable).where(gte(incidentsTable.publishedAt, sevenDaysAgo)),
-      db.select({
-        category: incidentsTable.category,
-        count: count(),
-      }).from(incidentsTable).groupBy(incidentsTable.category),
-      db.select({
-        riskLevel: incidentsTable.riskLevel,
-        count: count(),
-      }).from(incidentsTable).groupBy(incidentsTable.riskLevel),
-      db.select().from(incidentsTable).orderBy(desc(incidentsTable.publishedAt)).limit(10),
-      db.select().from(incidentsTable).where(eq(incidentsTable.riskLevel, "Critical")).orderBy(desc(incidentsTable.publishedAt)).limit(5),
-      db.selectDistinct({ country: incidentsTable.country }).from(incidentsTable),
+      IncidentModel.countDocuments().exec(),
+      IncidentModel.countDocuments({ riskLevel: "Critical" }).exec(),
+      IncidentModel.countDocuments({ isOngoing: true }).exec(),
+      IncidentModel.countDocuments({ publishedAt: { $gte: oneDayAgo } }).exec(),
+      IncidentModel.countDocuments({ publishedAt: { $gte: sevenDaysAgo } }).exec(),
+      IncidentModel.aggregate([
+        { $group: { _id: "$category", count: { $sum: 1 } } }
+      ]).exec(),
+      IncidentModel.aggregate([
+        { $group: { _id: "$riskLevel", count: { $sum: 1 } } }
+      ]).exec(),
+      IncidentModel.find().sort({ publishedAt: -1 }).limit(10).exec(),
+      IncidentModel.find({ riskLevel: "Critical" }).sort({ publishedAt: -1 }).limit(5).exec(),
+      IncidentModel.distinct("country").exec(),
     ]);
 
     const categoryBreakdown: Record<string, number> = {};
     for (const row of categoryResult) {
-      categoryBreakdown[row.category] = row.count;
+      if (row._id) categoryBreakdown[row._id] = row.count;
     }
 
     const riskBreakdown: Record<string, number> = {};
     for (const row of riskResult) {
-      riskBreakdown[row.riskLevel] = row.count;
+      if (row._id) riskBreakdown[row._id] = row.count;
     }
 
-    res.json({
-      totalIncidents: totalResult[0]?.count ?? 0,
-      criticalIncidents: criticalResult[0]?.count ?? 0,
-      ongoingIncidents: ongoingResult[0]?.count ?? 0,
-      countriesAffected: countriesResult.length,
-      last24hIncidents: last24hResult[0]?.count ?? 0,
-      last7dIncidents: last7dResult[0]?.count ?? 0,
+    return res.json({
+      totalIncidents: totalResult || 0,
+      criticalIncidents: criticalResult || 0,
+      ongoingIncidents: ongoingResult || 0,
+      countriesAffected: countriesResult.length || 0,
+      last24hIncidents: last24hResult || 0,
+      last7dIncidents: last7dResult || 0,
       categoryBreakdown,
       riskBreakdown,
-      recentIncidents: recentIncidents.map(formatIncident),
-      criticalAlerts: criticalAlerts.map(formatIncident),
+      recentIncidents: recentIncidents.map((i) => formatIncident(i.toJSON())),
+      criticalAlerts: criticalAlerts.map((i) => formatIncident(i.toJSON())),
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server error", message: String(err) });
+    return res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 
 router.get("/countries", async (_req, res) => {
   try {
-    const countryData = await db.select({
-      country: incidentsTable.country,
-      count: count(),
-      latitude: sql<number>`AVG(${incidentsTable.latitude})`.as("latitude"),
-      longitude: sql<number>`AVG(${incidentsTable.longitude})`.as("longitude"),
-    })
-    .from(incidentsTable)
-    .groupBy(incidentsTable.country)
-    .orderBy(desc(count()))
-    .limit(100);
+    await connectDB();
+    const countryData = await IncidentModel.aggregate([
+      {
+        $group: {
+          _id: "$country",
+          count: { $sum: 1 },
+          latitude: { $avg: "$latitude" },
+          longitude: { $avg: "$longitude" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 100 }
+    ]).exec();
 
     const countries = await Promise.all(countryData.map(async (row) => {
-      const [criticalResult, highResult, categoryResult] = await Promise.all([
-        db.select({ count: count() }).from(incidentsTable)
-          .where(eq(incidentsTable.country, row.country) && eq(incidentsTable.riskLevel, "Critical") as any),
-        db.select({ count: count() }).from(incidentsTable)
-          .where(eq(incidentsTable.country, row.country) && eq(incidentsTable.riskLevel, "High") as any),
-        db.select({
-          category: incidentsTable.category,
-          count: count(),
-        }).from(incidentsTable)
-          .where(eq(incidentsTable.country, row.country))
-          .groupBy(incidentsTable.category)
-          .orderBy(desc(count()))
-          .limit(1),
+      const country = row._id;
+      if (!country) return null;
+
+      const [criticalCount, highCount, categoryResult] = await Promise.all([
+        IncidentModel.countDocuments({ country, riskLevel: "Critical" }).exec(),
+        IncidentModel.countDocuments({ country, riskLevel: "High" }).exec(),
+        IncidentModel.aggregate([
+          { $match: { country } },
+          { $group: { _id: "$category", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 1 }
+        ]).exec(),
       ]);
 
       return {
-        country: row.country,
+        country,
         count: row.count,
-        criticalCount: criticalResult[0]?.count ?? 0,
-        highCount: highResult[0]?.count ?? 0,
-        topCategory: categoryResult[0]?.category || "Other",
+        criticalCount: criticalCount || 0,
+        highCount: highCount || 0,
+        topCategory: categoryResult[0]?._id || "Other",
         latitude: row.latitude || null,
         longitude: row.longitude || null,
       };
     }));
 
-    res.json({ countries });
+    return res.json({ countries: countries.filter(Boolean) });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server error", message: String(err) });
+    return res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 
 router.get("/trending", async (_req, res) => {
   try {
+    await connectDB();
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
-    const recentData = await db.select({
-      country: incidentsTable.country,
-      region: incidentsTable.region,
-      count: count(),
-    })
-    .from(incidentsTable)
-    .where(gte(incidentsTable.publishedAt, sevenDaysAgo))
-    .groupBy(incidentsTable.country, incidentsTable.region)
-    .orderBy(desc(count()))
-    .limit(20);
+    const recentData = await IncidentModel.aggregate([
+      { $match: { publishedAt: { $gte: sevenDaysAgo } } },
+      {
+        $group: {
+          _id: { country: "$country", region: "$region" },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 20 }
+    ]).exec();
 
     const regions = await Promise.all(recentData.map(async (row) => {
-      const name = row.region || row.country;
+      const { country, region } = row._id || {};
+      if (!country) return null;
+
+      const name = region || country;
 
       const [riskResult, categoryResult] = await Promise.all([
-        db.select({
-          riskLevel: incidentsTable.riskLevel,
-          count: count(),
-        }).from(incidentsTable)
-          .where(eq(incidentsTable.country, row.country))
-          .groupBy(incidentsTable.riskLevel)
-          .orderBy(desc(count()))
-          .limit(1),
-        db.select({
-          category: incidentsTable.category,
-          count: count(),
-        }).from(incidentsTable)
-          .where(eq(incidentsTable.country, row.country))
-          .groupBy(incidentsTable.category)
-          .orderBy(desc(count()))
-          .limit(1),
+        IncidentModel.aggregate([
+          { $match: { country } },
+          { $group: { _id: "$riskLevel", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 1 }
+        ]).exec(),
+        IncidentModel.aggregate([
+          { $match: { country } },
+          { $group: { _id: "$category", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 1 }
+        ]).exec()
       ]);
 
-      const riskLevel = (riskResult[0]?.riskLevel || "Low") as string;
+      const riskLevel = riskResult[0]?._id || "Low";
 
       return {
         name,
-        country: row.country,
+        country,
         incidentCount: row.count,
         riskLevel,
-        trend: "rising" as const,
-        topCategory: categoryResult[0]?.category || "Other",
+        trend: "rising",
+        topCategory: categoryResult[0]?._id || "Other",
       };
     }));
 
-    res.json({ regions });
+    return res.json({ regions: regions.filter(Boolean) });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server error", message: String(err) });
+    return res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 

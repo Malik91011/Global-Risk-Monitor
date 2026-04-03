@@ -1,9 +1,10 @@
 import { Router, type IRouter } from "express";
 import { runScrape, scraperState } from "../lib/scraper.js";
+import { requireAuth } from "../middlewares/auth.js";
 
 const router: IRouter = Router();
 
-router.post("/trigger", async (_req, res) => {
+router.post("/trigger", requireAuth, async (_req, res) => {
   if (scraperState.isRunning) {
     return res.json({
       success: false,
@@ -16,19 +17,19 @@ router.post("/trigger", async (_req, res) => {
   }
 
   try {
-    const result = await runScrape();
-    res.json({
+    // Fire and forget
+    runScrape().catch((err) => {
+      console.error("Background scrape failed:", err);
+    });
+
+    return res.status(202).json({
       success: true,
-      message: `Scrape complete. Found ${result.incidentsFound} items, added ${result.incidentsAdded} new incidents from ${result.sourcesScraped} sources.`,
-      ...result,
+      message: "Scraping job has been accepted and is running in the background.",
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: String(err),
-      incidentsFound: 0,
-      incidentsAdded: 0,
-      sourcesScraped: 0,
+      message: "Failed to start scraper",
       errors: [String(err)],
     });
   }

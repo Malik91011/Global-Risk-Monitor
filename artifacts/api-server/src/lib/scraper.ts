@@ -1,17 +1,10 @@
-import { db } from "@workspace/db";
-import { incidentsTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { IncidentModel, connectDB } from "@workspace/db";
 import { createHash } from "crypto";
 import { classifyCategory, classifyRiskLevel, extractTags, generateAiSummary } from "./classifier.js";
+import { processNewsItemsWithAI, type RssItem } from "./ai-extractor.js";
 
-interface RssItem {
-  title: string;
-  description: string;
-  link: string;
-  pubDate: string;
-  source: string;
-  sourceCountry: string; // hint only — always overridden by detectCountry()
-}
+// Shared from ai-extractor now
+// interface RssItem { ... }
 
 const NEWS_SOURCES = [
   // ═══════════════════════════════════════════════════════════
@@ -578,6 +571,7 @@ export async function runScrape(): Promise<{
   sourcesScraped: number;
   errors: string[];
 }> {
+  await connectDB();
   scraperState.isRunning = true;
   scraperState.errors = [];
 
@@ -585,68 +579,82 @@ export async function runScrape(): Promise<{
   const errors: string[] = [];
 
   try {
+    const unseenItems: RssItem[] = [];
+
     for (const source of NEWS_SOURCES) {
       const items = await fetchRssFeed(source.url, source.name, source.country);
       if (items.length > 0) sourcesScraped++;
 
       for (const item of items) {
         incidentsFound++;
-
         const urlHash = createHash("md5").update(item.link).digest("hex");
-        const existing = await db.select({ id: incidentsTable.id })
-          .from(incidentsTable).where(eq(incidentsTable.urlHash, urlHash)).limit(1);
-        if (existing.length > 0) continue;
-
-        // Always try to detect a specific country from article text
-        const detectedCountry = detectCountry(item.title, item.description);
-
-        // Use: detected specific country > source country (if not a generic region) > fallback
-        let country: string;
-        if (detectedCountry) {
-          country = detectedCountry;
-        } else if (!["Global", "Africa", "Asia", "Europe", "Middle East", "Latin America", "South Asia"].includes(source.country)) {
-          // Source is already country-specific (e.g. "Pakistan", "Nigeria")
-          country = source.country;
-        } else {
-          // Regional source with no specific country detected — keep regional label
-          country = source.country;
+        const existing = await IncidentModel.findOne({ urlHash }).select('_id').lean().exec();
+        if (!existing) {
+          unseenItems.push(item);
         }
+      }
+    }
 
-        const category = classifyCategory(item.title, item.description);
-        const riskLevel = classifyRiskLevel(item.title, item.description, category);
-        const tags = extractTags(item.title, item.description, country);
-        const aiSummary = generateAiSummary(item.title, item.description, category, riskLevel, country);
-        const coords = COUNTRY_COORDINATES[country] ?? COUNTRY_COORDINATES["Global"]!;
+    // Process new items through AI in batches of 30 to avoid token limits
+    const batchSize = 30;
+    for (let i = 0; i < unseenItems.length; i += batchSize) {
+      const batch = unseenItems.slice(i, i + batchSize);
+      
+      try {
+        const extracted = await processNewsItemsWithAI(batch);
+        
+        for (const incident of extracted) {
+          const country = incident.location.country || "Global";
+          const category = classifyCategory(incident.title, incident.summary);
+          const riskLevel = classifyRiskLevel(incident.title, incident.summary, category);
+          const tags = [...new Set([country, ...extractTags(incident.title, incident.summary, country)])].slice(0, 10);
+          
+          let coords = COUNTRY_COORDINATES[country];
+          if (!coords) {
+             // Fallback detection
+             const detected = detectCountry(incident.title, incident.summary);
+             coords = detected && COUNTRY_COORDINATES[detected] ? COUNTRY_COORDINATES[detected] : COUNTRY_COORDINATES["Global"]!;
+          }
 
-        let publishedAt: Date;
-        try {
-          publishedAt = new Date(item.pubDate);
-          if (isNaN(publishedAt.getTime())) publishedAt = new Date();
-        } catch {
-          publishedAt = new Date();
+          let publishedAt = new Date();
+          if (incident.dateTimeUtc) {
+            const parsed = new Date(incident.dateTimeUtc);
+            if (!isNaN(parsed.getTime())) publishedAt = parsed;
+          }
+
+          const urlHash = createHash("md5").update(incident.sourceUrl).digest("hex");
+          const existing = await IncidentModel.findOne({ urlHash }).select('_id').lean().exec();
+            
+          if (existing) continue;
+
+          try {
+            await IncidentModel.create({
+              title: incident.title.slice(0, 500),
+              summary: incident.summary.slice(0, 1000),
+              fullContent: incident.summary,
+              sourceUrl: incident.sourceUrl,
+              sourceName: "AI Aggregated News",
+              country,
+              latitude: coords[0],
+              longitude: coords[1],
+              category,
+              riskLevel,
+              isVerified: false,
+              isOngoing: riskLevel === "Ongoing",
+              publishedAt,
+              tags,
+              aiSummary: incident.summary,
+              urlHash,
+            });
+          } catch (e: any) {
+             if (e.code !== 11000) throw e;
+          }
+
+          incidentsAdded++;
+          scraperState.totalIncidentsScraped++;
         }
-
-        await db.insert(incidentsTable).values({
-          title: item.title.slice(0, 500),
-          summary: item.description.slice(0, 1000) || item.title,
-          fullContent: item.description,
-          sourceUrl: item.link,
-          sourceName: item.source,
-          country,
-          latitude: coords[0],
-          longitude: coords[1],
-          category,
-          riskLevel,
-          isVerified: false,
-          isOngoing: riskLevel === "Ongoing",
-          publishedAt,
-          tags,
-          aiSummary,
-          urlHash,
-        }).onConflictDoNothing();
-
-        incidentsAdded++;
-        scraperState.totalIncidentsScraped++;
+      } catch (err) {
+        console.error("AI Extractor Error in batch:", err);
       }
     }
   } catch (err) {

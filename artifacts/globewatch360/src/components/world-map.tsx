@@ -22,19 +22,19 @@ export default function WorldMap({ data = [] }: { data?: CountryStat[] }) {
 
   return (
     <div className="w-full aspect-[2/1] relative flex items-center justify-center overflow-hidden rounded-xl bg-[#090e1a] border border-white/5">
-      <ComposableMap 
-        projection="geoMercator" 
+      <ComposableMap
+        projection="geoMercator"
         projectionConfig={{ scale: 120 }}
         className="w-full h-full opacity-80"
       >
         <Sphere stroke="#1e293b" strokeWidth={0.5} fill="transparent" id="sphere" />
         <Graticule stroke="#1e293b" strokeWidth={0.5} />
         <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
+          {({ geographies }: { geographies: any[] }) =>
+            geographies.map((geo: any) => {
               const countryName = geo.properties.name.toLowerCase();
               const stat = statsMap.get(countryName);
-              
+
               return (
                 <Geography
                   key={geo.rsmKey}
@@ -53,7 +53,7 @@ export default function WorldMap({ data = [] }: { data?: CountryStat[] }) {
           }
         </Geographies>
       </ComposableMap>
-      
+
       <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur border border-white/10 rounded-lg p-3 text-xs flex flex-col gap-2">
         <div className="font-display font-bold text-foreground mb-1">Risk Heatmap</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Critical Incidents</div>
