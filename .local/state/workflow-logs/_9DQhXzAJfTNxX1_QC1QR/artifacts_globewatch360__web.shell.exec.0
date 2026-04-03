@@ -1,0 +1,835 @@
+
+> @workspace/globewatch360@0.0.0 dev /home/runner/workspace/artifacts/globewatch360
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m1518[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m23480[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.101.66:[1m23480[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:17:00 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/ad-slot.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/layout.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:20 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "/ad-slot" from "src/components/layout.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "/ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+      at TransformPluginContext._formatLog (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28999:43)
+      at TransformPluginContext.error (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28996:14)
+      at normalizeUrl (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27119:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27145:4)
+      at async EnvironmentPluginContainer.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28797:14)
+      at async loadAndTransform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:22670:26)
+      at async viteTransformMiddleware (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:24542:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/incident-detail.tsx, /src/pages/scraper.tsx, /src/pages/incidents.tsx, /src/pages/threats.tsx, /src/pages/reports.tsx, /src/index.css[22m
+[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist?
+[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x3)[39m
+[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist?
+[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:24 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:24 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "ad-slot" from "src/components/layout.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+      at TransformPluginContext._formatLog (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28999:43)
+      at TransformPluginContext.error (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28996:14)
+      at normalizeUrl (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27119:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27145:4)
+      at async EnvironmentPluginContainer.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28797:14)
+      at async loadAndTransform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:22670:26)
+      at async viteTransformMiddleware (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:24542:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:26 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/incident-detail.tsx, /src/pages/scraper.tsx, /src/pages/incidents.tsx, /src/pages/threats.tsx, /src/pages/reports.tsx, /src/index.css[22m
+[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist?
+[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x3)[39m
+[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist?
+[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:27 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:27 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import ".ad-slot" from "src/components/layout.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from ".ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+      at TransformPluginContext._formatLog (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28999:43)
+      at TransformPluginContext.error (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28996:14)
+      at normalizeUrl (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27119:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27145:4)
+      at async EnvironmentPluginContainer.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28797:14)
+      at async loadAndTransform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:22670:26)
+      at async viteTransformMiddleware (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:24542:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:27 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/incident-detail.tsx, /src/pages/scraper.tsx, /src/pages/incidents.tsx, /src/pages/threats.tsx, /src/pages/reports.tsx, /src/index.css[22m
+[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/components/ad-slot.tsx (resolved id: /home/runner/workspace/artifacts/globewatch360/src/components/ad-slot.tsx) in /home/runner/workspace/artifacts/globewatch360/src/pages/dashboard.tsx. Does the file exist? [33m(x2)[39m
+[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:30 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:18:31 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./ad-slot" from "src/components/layout.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/artifacts/globewatch360/src/components/layout.tsx[39m:8:19
+[33m  15 |  } from "lucide-react";
+  16 |  import { cn } from "@/lib/utils";
+  17 |  import AdSlot from "./ad-slot";
+     |                      ^
+  18 |  const NAV_ITEMS = [
+  19 |    { href: "/", label: "Dashboard", icon: LayoutDashboard },[39m
+      at TransformPluginContext._formatLog (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28999:43)
+      at TransformPluginContext.error (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28996:14)
+      at normalizeUrl (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27119:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:27145:4)
+      at async EnvironmentPluginContainer.transform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:28797:14)
+      at async loadAndTransform (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:22670:26)
+      at async viteTransformMiddleware (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0_yaml@2.8.2/node_modules/vite/dist/node/chunks/config.js:24542:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:19:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/ad-slot.tsx, /src/index.css, /src/pages/dashboard.tsx, /src/pages/incident-detail.tsx, /src/pages/scraper.tsx, /src/pages/incidents.tsx, /src/pages/threats.tsx, /src/pages/reports.tsx[22m
