@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/scraper/trigger",
+      "path": "/api/cron",
       "schedule": "0 * * * *"
     }
   ],
