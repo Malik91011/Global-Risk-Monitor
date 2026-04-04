@@ -46,4 +46,4 @@ export async function connectDB() {
 // However, any module that needs to access records must await connectDB() first,
 // usually done in the API route or middleware.
 
-export * from "./schema/index.js";
+export * from "./schema/index";

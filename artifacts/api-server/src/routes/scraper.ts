@@ -4,32 +4,34 @@ import { requireAuth } from "../middlewares/auth.js";
 
 const router: IRouter = Router();
 
-router.post("/trigger", requireAuth, async (_req, res) => {
+router.all("/trigger", requireAuth, async (_req, res) => {
   if (scraperState.isRunning) {
-    return res.json({
+    return res.status(409).json({
       success: false,
       message: "Scraper is already running",
-      incidentsFound: 0,
-      incidentsAdded: 0,
-      sourcesScraped: 0,
-      errors: ["Scraper already running"],
     });
   }
 
-  try {
-    // Fire and forget
-    runScrape().catch((err) => {
-      console.error("Background scrape failed:", err);
-    });
+  console.log("Scraper trigger received. Starting scrape...");
 
-    return res.status(202).json({
+  try {
+    // We await it here so Vercel keeps the function alive.
+    // Note: If this takes >60s it might still time out on Vercel Pro,
+    // or >10s on Hobby.
+    const result = await runScrape();
+
+    console.log(`Scrape completed: ${result.incidentsAdded} added, ${result.errors.length} errors.`);
+
+    return res.status(200).json({
       success: true,
-      message: "Scraping job has been accepted and is running in the background.",
+      message: "Scraping completed successfully",
+      ...result
     });
   } catch (err) {
+    console.error("Scrape failed:", err);
     return res.status(500).json({
       success: false,
-      message: "Failed to start scraper",
+      message: "Failed to complete scraper",
       errors: [String(err)],
     });
   }

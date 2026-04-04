@@ -9,8 +9,11 @@ app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// app.use("/api", router);
+// Moved router call to match the rest of the app style
 app.use("/api", router);
 
-startScheduler();
+// No local scheduler in Vercel - use Crons in vercel.json instead
+// startScheduler(); 
 
 export default app;
