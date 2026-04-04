@@ -7,6 +7,7 @@ import scraperRouter from "./scraper.js";
 import statsRouter from "./stats.js";
 import { profileRouter } from "./profile.js";
 import { authRouter } from "./auth.js";
+import cronRouter from "./cron.js";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use("/scraper", scraperRouter);
 router.use("/stats", statsRouter);
 router.use("/profile", profileRouter);
 router.use("/auth", authRouter);
+router.use("/cron", cronRouter);
 
 export default router;
