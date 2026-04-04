@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { runScrape, scraperState } from "../artifacts/api-server/src/lib/scraper.js";
+import { runScrape, scraperState } from "../artifacts/api-server/src/lib/scraper";
 import { connectDB } from "@workspace/db";
 
 /**

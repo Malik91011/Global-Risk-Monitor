@@ -1,7 +1,7 @@
 import { IncidentModel, connectDB } from "@workspace/db";
 import { createHash } from "crypto";
-import { classifyCategory, classifyRiskLevel, extractTags, generateAiSummary } from "./classifier.js";
-import { processNewsItemsWithAI, type RssItem } from "./ai-extractor.js";
+import { classifyCategory, classifyRiskLevel, extractTags, generateAiSummary } from "./classifier";
+import { processNewsItemsWithAI, type RssItem } from "./ai-extractor";
 
 // Shared from ai-extractor now
 // interface RssItem { ... }

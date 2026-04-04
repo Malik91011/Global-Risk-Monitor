@@ -1,4 +1,4 @@
-import app from "../artifacts/api-server/src/app.js";
+import app from "../artifacts/api-server/src/app";
 
 /**
  * Standard Vercel Serverless Function gateway for the main Express API.

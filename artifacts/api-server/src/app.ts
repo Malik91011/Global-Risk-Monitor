@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import cors from "cors";
-import router from "./routes/index.js";
-import { startScheduler } from "./lib/scraper.js";
+import router from "./routes/index";
+import { startScheduler } from "./lib/scraper";
 
 const app: Express = express();
 
