@@ -1,25 +1,17 @@
-import { Router, type IRouter } from "express";
+// /api-server/api/cron.ts
 import { runScrape, scraperState } from "../lib/scraper.js";
-import { requireAuth } from "../middlewares/auth.js";
 import { connectDB } from "@workspace/db";
 
-const router: IRouter = Router();
-
-/**
- * GET /api/cron
- * Centralized cron handler to comply with Vercel Hobby plan limits.
- * This function can coordinate multiple background tasks.
- */
-router.all("/", requireAuth, async (_req, res) => {
+export default async function handler(req, res) {
   console.log("Centralized Cron Triggered at", new Date().toISOString());
 
-  const results: Record<string, any> = {};
-  const errors: string[] = [];
+  const results = {};
+  const errors = [];
 
   try {
     await connectDB();
 
-    // Task 1: Scraper
+    // Scraper task
     if (scraperState.isRunning) {
       results.scraper = { success: false, message: "Scraper already running" };
     } else {
@@ -33,10 +25,6 @@ router.all("/", requireAuth, async (_req, res) => {
         results.scraper = { success: false, error: String(err) };
       }
     }
-
-    // Add more tasks here as needed:
-    // results.cleanup = await runCleanup();
-    // results.notifications = await sendDigest();
 
     return res.status(200).json({
       success: errors.length === 0,
@@ -53,6 +41,4 @@ router.all("/", requireAuth, async (_req, res) => {
       error: String(err),
     });
   }
-});
-
-export default router;
+}
