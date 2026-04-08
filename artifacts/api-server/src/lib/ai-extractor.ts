@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { zodResponseFormat } from 'openai/helpers/zod';
 
 const openai = new OpenAI(); // Automatically uses process.env.OPENAI_API_KEY
 
@@ -38,7 +37,7 @@ export async function processNewsItemsWithAI(items: RssItem[]): Promise<Extracte
 
   const payloadStr = items.map((i, idx) => `[ITEM ${idx + 1}]\nTITLE: ${i.title}\nDATE: ${i.pubDate}\nLINK: ${i.link}\nSOURCE: ${i.source}\nCONTENT: ${i.description}`).join("\n\n---\n\n");
 
-  const completion = await openai.chat.completions.parse({
+  const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
@@ -60,9 +59,56 @@ Return results as a structured JSON array. Deduplicate stories that cover the sa
         content: payloadStr
       }
     ],
-    response_format: zodResponseFormat(IncidentArraySchema as any, "incident_extraction"),
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "incident_extraction",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            incidents: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  dateTimeUtc: { type: "string" },
+                  location: {
+                    type: "object",
+                    properties: {
+                      country: { type: "string" },
+                      region: { type: ["string", "null"] },
+                      city: { type: ["string", "null"] }
+                    },
+                    required: ["country", "region", "city"],
+                    additionalProperties: false
+                  },
+                  category: { type: "string" },
+                  summary: { type: "string" },
+                  sourceUrl: { type: "string" }
+                },
+                required: ["title", "dateTimeUtc", "location", "category", "summary", "sourceUrl"],
+                additionalProperties: false
+              }
+            }
+          },
+          required: ["incidents"],
+          additionalProperties: false
+        }
+      }
+    },
     temperature: 0.1,
   });
 
-  return completion.choices[0].message.parsed?.incidents || [];
+  const raw = completion.choices[0]?.message?.content ?? "{}";
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+
+  const result = IncidentArraySchema.safeParse(parsed);
+  return result.success ? result.data.incidents : [];
 }

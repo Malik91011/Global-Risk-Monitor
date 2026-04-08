@@ -45,10 +45,10 @@ router.post("/generate", async (req, res) => {
       advisory: advisory || null,
     });
 
-    return res.json(formatReport(report.toJSON()));
+    res.json(formatReport(report.toJSON()));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Internal server error", message: String(err) });
+    res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 
@@ -66,10 +66,10 @@ router.get("/", async (req, res) => {
       ReportModel.countDocuments().exec(),
     ]);
 
-    return res.json({ reports: reports.map((r) => formatReport(r.toJSON())), total: total || 0 });
+    res.json({ reports: reports.map((r) => formatReport(r.toJSON())), total: total || 0 });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Internal server error", message: String(err) });
+    res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 
@@ -80,18 +80,20 @@ router.get("/:id/export", async (req, res) => {
     const format = req.query.format === "pdf" ? "pdf" : "text";
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Bad Request", message: "Invalid report ID" });
+      res.status(400).json({ error: "Bad Request", message: "Invalid report ID" });
+      return;
     }
 
     const report = await ReportModel.findById(id).exec();
 
     if (!report) {
-      return res.status(404).json({ error: "Not found", message: "Report not found" });
+      res.status(404).json({ error: "Not found", message: "Report not found" });
+      return;
     }
 
     const filename = `globewatch360_report_${id}_${new Date().toISOString().split("T")[0]}.${format === "pdf" ? "txt" : "txt"}`;
 
-    return res.json({
+    res.json({
       reportId: id,
       format,
       content: report.content,
@@ -99,7 +101,7 @@ router.get("/:id/export", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Internal server error", message: String(err) });
+    res.status(500).json({ error: "Internal server error", message: String(err) });
   }
 });
 
