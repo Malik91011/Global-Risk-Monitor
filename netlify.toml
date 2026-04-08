@@ -1,7 +1,7 @@
 [build]
-  command = "pnpm run build"
+  command = "pnpm install --no-frozen-lockfile && pnpm run build"
   publish = "artifacts/globewatch360/dist"
 
 [build.environment]
-  PNPM_VERSION = "9"
+  PNPM_VERSION = "9.5.0"
   NODE_VERSION = "20"
